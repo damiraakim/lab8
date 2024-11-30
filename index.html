@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+</head>
+<body>
+    <div id="entries"></div>
+    <form id="entryForm">
+        <label for="country">Country:</label>
+        <select id="country" name="country"></select>
+      
+        <label for="date">Date:</label>
+        <input type="date" id="date" name="date">
+      
+        <label for="message">Message:</label>
+        <textarea id="message" name="message"></textarea>
+      
+        <button type="submit">Create</button>
+     </form>
+    <script>
+        const entries = JSON.parse(localStorage.getItem('travel')) || [];
+        const entryForm = document.getElementById('entryForm');
+        const entriesContainer = document.getElementById('entries');
+        const countrySelect = document.getElementById('country');
+
+        
+        fetch('https://restcountries.com/v3.1/all') 
+          .then(res => res.json()) 
+          .then(data => {
+            countrySelect.innerHTML = data.map( 
+              country => `<option value="${country.name.common}">${country.name.common}</option>`
+            ).join('');
+          });
+      
+        
+        entryForm.addEventListener('submit', event => {
+          event.preventDefault(); 
+          const formData = new FormData(entryForm);
+          const newEntry = {
+            country: formData.get('country'),
+            date: formData.get('date'),
+            message: formData.get('message'),
+          };
+          entries.push(newEntry); 
+          localStorage.setItem('travel', JSON.stringify(entries)); 
+          renderEntries(); 
+          entryForm.reset();
+        });
+
+        
+        function deleteEntry(index) { 
+          if (confirm('Are you sure you want to delete?')) {  
+            entries.splice(index, 1); 
+            localStorage.setItem('travel', JSON.stringify(entries)); 
+            renderEntries(); 
+          }
+        }
+
+        
+        function renderEntries() {
+          entriesContainer.innerHTML = ''; 
+          for(let i=0; i<entries.length; i++){
+            const entry=entries[i]; 
+
+            const entryEl=document.createElement('div');
+
+            const title=document.createElement('h3');
+            title.textContent = entry.country + ' (' + entry.date + ')';
+            entryEl.appendChild(title);
+
+            const message=document.createElement('p');
+            message.textContent=entry.message;
+            entryEl.appendChild(message);
+            
+            const buttonDelete=document.createElement('button');
+            buttonDelete.textContent="Delete form";
+            buttonDelete.onclick=function(){
+              deleteEntry(i);
+            };
+
+            entryEl.appendChild(buttonDelete);
+            entriesContainer.appendChild(entryEl);
+          }
+        }
+
+        
+    </script>
+</body>
+</html>

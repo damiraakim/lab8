@@ -1,0 +1,10 @@
+body{
+    font-size: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    background-image: url("https://studio331.co/wp-content/uploads/one-year-diary-undated.jpg");
+    background-size: cover;
+}
+button{
+    height: 50px;
+    width: 70px;
+}
